@@ -1,9 +1,10 @@
 library("rstan") # observe startup messages
 library(tidyverse)
 library(simsurv)
+library(broom)
 sm <- stan_model("~/Desktop/Stan/Within_Chain_Parallelisation/exponential_survival_parallel.stan")
-
-N <- 50000
+sm0 <- stan_model("~/Desktop/Stan/Within_Chain_Parallelisation/exponential_survival.stan")
+N <- 10000
 cov <- data.frame(id = 1:N,
                   trt = rbinom(N, 1, 0.5))
 
@@ -40,4 +41,19 @@ fit <- sampling(sm,
                 iter=10000)
 end_time <- Sys.time()
 end_time - start_time
+
+start_time <- Sys.time()
+fit0 <- sampling(sm0, 
+                data=stan_data, 
+                seed=42, 
+                chains=4, 
+                cores=1, 
+                iter=10000)
+end_time <- Sys.time()
+end_time - start_time
+broom::tidy(fit, conf.int=T, rhat=T,ess=T)
+broom::tidy(fit0, conf.int=T, rhat=T,ess=T)
+
+
+
 
