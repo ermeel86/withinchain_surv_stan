@@ -3,6 +3,7 @@ library(tidyverse)
 library(simsurv)
 library(broom)
 library(bayesplot)
+library(cowplot)
 #############################################################################
 sm <- stan_model("~/Desktop/Stan/Within_Chain_Parallelisation/exponential_survival_parallel_2.stan")
 sm0 <- stan_model("~/Desktop/Stan/Within_Chain_Parallelisation/exponential_survival.stan")
@@ -41,10 +42,11 @@ Sys.setenv(STAN_NUM_THREADS=1)
 start_time <- Sys.time()
 fit1 <- sampling(sm, 
                 data=stan_data, 
-                seed=42, 
-                chains=4, 
+                seed=42,
+                init=0,
+                chains=1, 
                 cores=1, 
-                iter=10000)
+                iter=20000)
 end_time <- Sys.time()
 end_time - start_time
 #############################################################################
@@ -53,9 +55,10 @@ start_time <- Sys.time()
 fit2 <- sampling(sm, 
                 data=stan_data, 
                 seed=42, 
-                chains=4, 
+                init=0,
+                chains=1, 
                 cores=1, 
-                iter=10000)
+                iter=20000)
 end_time <- Sys.time()
 end_time - start_time
 #############################################################################
@@ -64,9 +67,10 @@ start_time <- Sys.time()
 fit3 <- sampling(sm, 
                  data=stan_data, 
                  seed=42, 
-                 chains=4, 
-                 cores=1, 
-                 iter=10000)
+                 chains=1, 
+                 cores=1,
+                 init=0,
+                 iter=20000)
 end_time <- Sys.time()
 end_time - start_time
 #############################################################################
@@ -75,9 +79,10 @@ start_time <- Sys.time()
 fit4 <- sampling(sm, 
                  data=stan_data, 
                  seed=42, 
-                 chains=4, 
-                 cores=1, 
-                 iter=10000)
+                 chains=1, 
+                 cores=1,
+                 init=0,
+                 iter=20000)
 end_time <- Sys.time()
 end_time - start_time
 #############################################################################
@@ -85,9 +90,10 @@ start_time <- Sys.time()
 fit0 <- sampling(sm0, 
                 data=stan_data, 
                 seed=42, 
-                chains=4, 
-                cores=1, 
-                iter=10000)
+                chains=1, 
+                cores=1,
+                init=0,
+                iter=20000)
 end_time <- Sys.time()
 end_time - start_time
 #############################################################################
@@ -114,6 +120,14 @@ bayesplot::mcmc_areas(df_fits, regex_pars = "betas")
 bayesplot::mcmc_intervals(df_fits, regex_pars = "intercept")
 bayesplot::mcmc_intervals(df_fits, regex_pars = "betas")
 #############################################################################
+color_scheme_set("viridis")
+bayesplot::mcmc_trace(df_fits, regex_pars = "intercept")
+#############################################################################
+adaptinfos <- map(list(fit0, fit1, fit2, fit3, fit4), ~rstan::get_adaptation_info(.)[[1]])
+
+
+
+
 
 
 
